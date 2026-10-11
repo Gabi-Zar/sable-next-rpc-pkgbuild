@@ -1,31 +1,26 @@
 # Maintainer: GabiZar <GabiZar@proton.me>
 pkgname=sable-next-rpc
-pkgver=nightly.1.22.10.nightly.261009115558.011c6f29c17e
+pkgver=2.0.1
 pkgrel=1
-pkgdesc="Fork of Sable Next with rich presence support (MSC4544) nightly build"
+pkgdesc="Fork of Sable Next with rich presence support (MSC4544)"
 arch=('x86_64')
 url="https://github.com/Gabi-Zar/sable-next-rpc"
 license=('AGPL-3.0-or-later')
 depends=(
-  'at-spi2-core'
-  'alsa-lib'
-  'dbus'
-  'desktop-file-utils'
   'gtk3'
-  'hicolor-icon-theme'
-  'libayatana-appindicator'
-  'libcups'
-  'libdrm'
-  'libxcomposite'
-  'libxdamage'
-  'libxkbcommon'
-  'libxrandr'
-  'libxss'
-  'mesa'
-  'nspr'
   'nss'
+  'nspr'
+  'mesa'
+  'libdrm'
+  'libxkbcommon'
+  'alsa-lib'
+  'libcups'
+  'libpipewire'
+  'libayatana-appindicator'
   'xdg-utils'
   'xorg-xwayland'
+  'hicolor-icon-theme'
+  'desktop-file-utils'
 )
 makedepends=(
   'git'
@@ -34,12 +29,12 @@ makedepends=(
 source=("git+$url.git#branch=rich-presence")
 sha256sums=('SKIP')
 provides=('sable-next')
-conflicts=('sable-next-bin' 'sable-next-nightly-bin' 'sable-next-git')
+conflicts=('sable-bin' 'sable-nightly-bin' 'sable')
 options=(!debug !strip)
 
 pkgver() {
   cd "${pkgname}"
-  git describe --tags $(git merge-base HEAD main) | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+  git describe --tags $(git merge-base HEAD main) --match 'v[0-9]*' | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
@@ -50,13 +45,13 @@ build() {
   mise run setup
 
   chmod +x scripts/tauri.js
-  mise run tauri cef build --config src-tauri/tauri.nightly.conf.json
-  mise run cef:package "${pkgver}" "Sable Next Nightly"
+  mise run tauri cef build
+  mise run cef:package
 }
 
 package() {
   cd "${pkgname}/target/release/bundle/deb"
 
-  bsdtar -xOf "sable-next-${pkgver}-linux-x86_64.deb" data.tar.gz | bsdtar -xf - -C "${pkgdir}/"
+  bsdtar -xOf "sable-${pkgver}-linux-x86_64.deb" data.tar.gz | bsdtar -xf - -C "${pkgdir}/"
   find "$pkgdir" -type d -exec chmod 755 {} +
 }
