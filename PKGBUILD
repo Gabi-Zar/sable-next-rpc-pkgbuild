@@ -1,6 +1,6 @@
 # Maintainer: GabiZar <GabiZar@proton.me>
 pkgname=sable-next-rpc
-pkgver=2.0.1
+pkgver=2.0.3
 pkgrel=1
 pkgdesc="Fork of Sable Next with rich presence support (MSC4544)"
 arch=('x86_64')
@@ -44,7 +44,6 @@ build() {
   mise install
   mise run setup
 
-  chmod +x scripts/tauri.js
   mise run tauri cef build
   mise run cef:package
 }
