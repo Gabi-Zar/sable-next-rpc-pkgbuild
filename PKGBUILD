@@ -1,6 +1,6 @@
 # Maintainer: GabiZar <GabiZar@proton.me>
 pkgname=sable-next-rpc
-pkgver=2.0.3
+pkgver=2.1.5
 pkgrel=1
 pkgdesc="Fork of Sable Next with rich presence support (MSC4544)"
 arch=('x86_64')
@@ -9,22 +9,19 @@ license=('AGPL-3.0-or-later')
 depends=(
   'gtk3'
   'nss'
-  'nspr'
-  'mesa'
-  'libdrm'
-  'libxkbcommon'
-  'alsa-lib'
-  'libcups'
-  'libpipewire'
-  'libayatana-appindicator'
+  'libnotify'
+  'libxss'
+  'libxtst'
+  'at-spi2-core'
+  'util-linux-libs'
   'xdg-utils'
-  'xorg-xwayland'
   'hicolor-icon-theme'
   'desktop-file-utils'
 )
 makedepends=(
   'git'
   'mise'
+  'rpm-tools'
 )
 source=("git+$url.git#branch=rich-presence")
 sha256sums=('SKIP')
@@ -40,17 +37,19 @@ pkgver() {
 build() {
   unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS RUSTFLAGS CARGO_ENCODED_RUSTFLAGS
   cd "${pkgname}"
+
+  export SABLE_BUILD_FLAVOR=stable
+  sed -i 's/const enabled = app.isPackaged \&\& !process.env.FLATPAK_ID;/const enabled = false;/' electron/src/updater.ts
   
   mise install
-  mise run setup
-
-  mise run tauri cef build
-  mise run cef:package
+  mise run build
+  mise exec -- pnpm --dir electron package --linux
 }
 
 package() {
-  cd "${pkgname}/target/release/bundle/deb"
+  cd "${pkgname}/electron/release"
 
-  bsdtar -xOf "sable-${pkgver}-linux-x86_64.deb" data.tar.gz | bsdtar -xf - -C "${pkgdir}/"
-  find "$pkgdir" -type d -exec chmod 755 {} +
+  bsdtar -xOf "sable-${pkgver}-amd64.deb" 'data.tar*' | bsdtar -xp -C "${pkgdir}"
+  find "${pkgdir}" -type d -exec chmod 755 {} +
+  find "${pkgdir}/opt" -name chrome-sandbox -exec chmod 4755 {} +
 }
