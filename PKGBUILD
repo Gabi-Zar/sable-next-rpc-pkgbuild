@@ -25,7 +25,7 @@ makedepends=(
 )
 source=("git+$url.git#branch=rich-presence")
 sha256sums=('SKIP')
-provides=('sable-next')
+provides=('sable')
 conflicts=('sable-bin' 'sable-nightly-bin' 'sable')
 options=(!debug !strip)
 
