@@ -1,6 +1,6 @@
 # Maintainer: GabiZar <GabiZar@proton.me>
 pkgname=sable-next-rpc
-pkgver=2.1.5
+pkgver=2.2.0
 pkgrel=1
 pkgdesc="Fork of Sable Next with rich presence support (MSC4544)"
 arch=('x86_64')
@@ -39,7 +39,6 @@ build() {
   cd "${pkgname}"
 
   export SABLE_BUILD_FLAVOR=stable
-  sed -i 's/const enabled = app.isPackaged \&\& !process.env.FLATPAK_ID;/const enabled = false;/' electron/src/updater.ts
   
   mise install
   mise run build
