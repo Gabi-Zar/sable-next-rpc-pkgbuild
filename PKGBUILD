@@ -1,6 +1,6 @@
 # Maintainer: GabiZar <GabiZar@proton.me>
 pkgname=sable-next-rpc
-pkgver=2.2.0
+pkgver=2.2.1
 pkgrel=1
 pkgdesc="Fork of Sable Next with rich presence support (MSC4544)"
 arch=('x86_64')
@@ -31,7 +31,7 @@ options=(!debug !strip)
 
 pkgver() {
   cd "${pkgname}"
-  git describe --tags $(git merge-base HEAD main) --match 'v[0-9]*' | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+  git describe --tags --abbrev=0 HEAD | sed 's/^v//'
 }
 
 build() {
